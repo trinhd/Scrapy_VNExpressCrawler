@@ -13,8 +13,8 @@ class AllvnexpressSpider(scrapy.Spider):
     name = "allvnexpress"
     allowed_domains = ["vnexpress.net"]
     start_urls = (
-        #'http://vnexpress.net/',
-		'http://sohoa.vnexpress.net/tin-tuc/san-pham/dien-thoai/smartphone-co-cam-bien-van-tay-gia-4-2-trieu-dong-tai-vn-3319796.html',
+        'http://vnexpress.net/',
+		#'http://sohoa.vnexpress.net/tin-tuc/san-pham/dien-thoai/smartphone-co-cam-bien-van-tay-gia-4-2-trieu-dong-tai-vn-3319796.html',
     )
 
     rules = (
@@ -28,7 +28,7 @@ class AllvnexpressSpider(scrapy.Spider):
 
 	crawledLinks = []
 
-	linkPattern     = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
+	linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
 	for link in links:
 	    if linkPattern.match(link) and not link in crawledLinks:
