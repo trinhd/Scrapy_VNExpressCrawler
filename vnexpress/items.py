@@ -10,7 +10,8 @@ import scrapy
 
 class VnexpressItem(scrapy.Item):
     # define the fields for your item here like:
-    link = scrapy.Field()
-    title = scrapy.Field()
     content = scrapy.Field()
+    title = scrapy.Field()
+    link = scrapy.Field()
+    subject = scrapy.Field()
     # pass
