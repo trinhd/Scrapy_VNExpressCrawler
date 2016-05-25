@@ -64,7 +64,6 @@
 &yacute;
 &thorn;
 &yuml;
-&nbsp;
 &iexcl;
 &cent;
 &pound;
@@ -135,7 +134,6 @@
 &otimes;
 &perp;
 &sdot;
-
 &Alpha;
 &Beta;
 &Gamma;
@@ -178,7 +176,6 @@
 &pi;
 &rho;
 &sigmaf;
-&sigma;
 &sigma;
 &tau;
 &upsilon;
