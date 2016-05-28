@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import pymongo
+import re
 
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
@@ -7,7 +9,8 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 from vnexpress.items import VnexpressItem
 
-import re
+from pymongo import MongoClient
+
 
 class AllvnexpressSpider(scrapy.Spider):
 	name = "allvnexpress"
@@ -31,11 +34,20 @@ class AllvnexpressSpider(scrapy.Spider):
 		#links = ()
 
 		crawledLinks = []
+		client = MongoClient()
+		db = client.allvnexpress
+		collCrawledLinks = db.crawledLinks
+		for cl in collCrawledLinks.find():
+			"""print str(cl["crawled"])
+			print type(cl["crawled"])
+			return"""
+			crawledLinks.append(str(cl["crawled"]))
 
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
 		for link in links:
 			if linkPattern.match(link) and not link in crawledLinks:
+				collCrawledLinks.insert_one({"crawled": link})
 				crawledLinks.append(link)
 				yield Request(link, self.parse)
 		
@@ -76,11 +88,22 @@ class AllvnexpressSpider(scrapy.Spider):
 			#print '-------------------'
 			document = document + " " + para
 		
+		content = self.removeHTMLSpecialEntities(document)
+
+		collAll = db.all
+		oneRow = {
+			"subject": subject,
+			"link": response.url,
+			"title": title,
+			"content": content
+		}
+		collAll.insert_one(oneRow)
+
 		item = VnexpressItem()
 		item['link'] = response.url
 		item['subject'] = subject
 		item['title'] = title
-		item['content'] = self.removeHTMLSpecialEntities(document)
+		item['content'] = content
 		self.count = self.count + 1
 		print self.count
 		yield item;
