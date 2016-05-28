@@ -24,7 +24,8 @@ class AllvnexpressSpider(scrapy.Spider):
 
 	rules = (
 		Rule(LinkExtractor(deny=('/cong-dong/hoi-dap/')), callback='parse'),
-		Rule(LinkExtractor(deny=('/tin-tuc/cong-dong/')), callback='parse')
+		Rule(LinkExtractor(deny=('/tin-tuc/cong-dong/')), callback='parse'),
+		Rule(LinkExtractor(deny=('video.vnexpress.net')), callback='parse')
 	)
 
 	count = 0
@@ -38,10 +39,7 @@ class AllvnexpressSpider(scrapy.Spider):
 		db = client.allvnexpress
 		collCrawledLinks = db.crawledLinks
 		for cl in collCrawledLinks.find():
-			"""print str(cl["crawled"])
-			print type(cl["crawled"])
-			return"""
-			crawledLinks.append(str(cl["crawled"]))
+			crawledLinks.append(str(cl["crawled"])) #doc lai tu csdl nhung link da crawl
 
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
