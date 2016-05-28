@@ -14,20 +14,20 @@ BOT_NAME = 'vnexpress'
 SPIDER_MODULES = ['vnexpress.spiders']
 NEWSPIDER_MODULE = 'vnexpress.spiders'
 
-CONCURRENT_ITEMS = 100
+CONCURRENT_ITEMS = 500
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'vnexpress (+http://www.yourdomain.com)'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS=100 #1000000
+CONCURRENT_REQUESTS=500 #1000000
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY=0.3
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN=100 #1000000
+CONCURRENT_REQUESTS_PER_DOMAIN=500 #1000000
 #CONCURRENT_REQUESTS_PER_IP=16 #1000000
 
 # Disable cookies (enabled by default)
