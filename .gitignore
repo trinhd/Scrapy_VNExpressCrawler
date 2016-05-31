@@ -1,4 +1,5 @@
 *.pyc
-allvnexpress_result.xml
-allvnexpress_log.tri
-Allvnexpress_2nd.rar
+*.xml
+*.log
+*.tri
+*.rar
