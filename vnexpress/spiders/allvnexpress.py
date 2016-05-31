@@ -42,8 +42,10 @@ class AllvnexpressSpider(scrapy.Spider):
 		client = MongoClient()
 		db = client.allvnexpress
 		collCrawledLinks = db.crawledLinks
-		for cl in collCrawledLinks.find():
-			crawledLinks.append(str(cl["crawled"])) #doc lai tu csdl nhung link da crawl
+		if len(crawledLinks) == 0:
+			for cl in collCrawledLinks.find():
+				crawledLinks.append(str(cl["crawled"])) #doc lai tu csdl nhung link da crawl
+				self.count = self.count + 1
 
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
