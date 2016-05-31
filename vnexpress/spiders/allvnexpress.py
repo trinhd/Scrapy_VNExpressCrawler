@@ -33,26 +33,26 @@ class AllvnexpressSpider(scrapy.Spider):
 	)
 
 	count = 0
+	crawledLinks = []
 
 	def parse(self, response):
 		links = response.xpath("//a/@href").extract()
 		#links = ()
 
-		crawledLinks = []
 		client = MongoClient()
 		db = client.allvnexpress
 		collCrawledLinks = db.crawledLinks
-		if len(crawledLinks) == 0:
+		if len(self.crawledLinks) == 0:
 			for cl in collCrawledLinks.find():
-				crawledLinks.append(str(cl["crawled"])) #doc lai tu csdl nhung link da crawl
+				self.crawledLinks.append(str(cl["crawled"])) #doc lai tu csdl nhung link da crawl
 				self.count = self.count + 1
 
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
 		for link in links:
-			if linkPattern.match(link) and not link in crawledLinks:
+			if linkPattern.match(link) and not link in self.crawledLinks:
 				collCrawledLinks.insert_one({"crawled": link})
-				crawledLinks.append(link)
+				self.crawledLinks.append(link)
 				yield Request(link, self.parse)
 		
 		subject = response.xpath('//li[contains(@class, "start")]/a/text()').extract_first()
