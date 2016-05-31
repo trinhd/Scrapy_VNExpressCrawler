@@ -1,0 +1,5 @@
+scrapy crawl -o allvnexpress.xml -t xml --logfile=allvnexpress.log allvnexpress
+
+mongoexport.exe /v /d allvnexpress /c all /f "subject,link,title,content" /type:csv /o D:\all.csv
+
+for %f in (*.xml) do type "%f" >> ..\output.xml
