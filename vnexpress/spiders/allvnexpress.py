@@ -28,6 +28,7 @@ class AllvnexpressSpider(scrapy.Spider):
 		Rule(LinkExtractor(deny=('/tin-tuc/tam-su/')), callback='parse'),
 		Rule(LinkExtractor(deny=('/tin-tuc/cuoi/')), callback='parse'),
 		Rule(LinkExtractor(deny=('video.vnexpress.net')), callback='parse'),
+		Rule(LinkExtractor(deny=('ione.vnexpress.net')), callback='parse'),
 		Rule(LinkExtractor(deny=('raovat.vnexpress.net')), callback='parse')
 	)
 
@@ -60,45 +61,27 @@ class AllvnexpressSpider(scrapy.Spider):
 		if title == None:
 			return
 
+		if subject == None:
+			subject = response.xpath('//li[contains(@class, "start")]/h4/a/text()').extract_first()
+
 		for para in contents:
-			"""inPList = para.xpath('./span/text()').extract()
-			if inPList is None:
-			inPList = para.xpath('./em/text()').extract()
-			if inPList is None:
-				document = document + " " + para.xpath('./text()').extract_first()
-			else:
-				for em in para:
-			if para.xpath('./span/text()').extract() is not None
-			document = document + " " + para.xpath('./span/text()').extract_first()
-			elif para.xpath('./em/text()').extract() is not None:
-			document = document + " " + para.xpath('./em/text()').extract_first()
-			else: document = document + " " + para.xpath('./text()').extract_first()
-
-		para = contents[2]"""
-
 			deTag = self.detectTag(para, 0)
-			#print para
-			#print deTag
-			#print '-------------------'
 			while deTag[2] < len(para):
 				if deTag[0] != '-1' and deTag[1] != '-1':
 					para = para.replace(deTag[0], '', 1).replace(deTag[1], '', 1)
 				deTag = self.detectTag(para, deTag[2])
-			#print para
-			#print deTag
-			#print '-------------------'
 			document = document + " " + para
 		
 		content = self.removeHTMLSpecialEntities(document)
 
-		collAll = db.all
+		"""collAll = db.all
 		oneRow = {
 			"subject": subject,
 			"link": response.url,
 			"title": title,
 			"content": content
 		}
-		collAll.insert_one(oneRow)
+		collAll.insert_one(oneRow)"""
 
 		item = VnexpressItem()
 		item['link'] = response.url
@@ -107,7 +90,7 @@ class AllvnexpressSpider(scrapy.Spider):
 		item['content'] = content
 		self.count = self.count + 1
 		print self.count
-		yield item;
+		yield item
 
 	def detectTag(self, sInput, iBegin):
 	#Tim dau < dau tien de bat dau xac dinh the tag
@@ -134,7 +117,7 @@ class AllvnexpressSpider(scrapy.Spider):
 			if iEndAngleBracketOpen == -1:
 				return ['-1','-1', iBeginAngleBracketClose + 1]
 
-			return [sInput[iBeginAngleBracketOpen: iBeginAngleBracketClose + 1], sInput[iEndAngleBracketOpen: iEndAngleBracketOpen + len(sTag) + 3], iBeginAngleBracketOpen]; #Cong 3 do: 1 dau /, 1 dau > va 1 index cach ra
+			return [sInput[iBeginAngleBracketOpen: iBeginAngleBracketClose + 1], sInput[iEndAngleBracketOpen: iEndAngleBracketOpen + len(sTag) + 3], iBeginAngleBracketOpen] #Cong 3 do: 1 dau /, 1 dau > va 1 index cach ra
 		else:
 			return ['-1', '-1', len(sInput)] #Da het cach tim kiem
 
@@ -143,4 +126,4 @@ class AllvnexpressSpider(scrapy.Spider):
 		sOutput = sOutput.replace("<br>", "\n") #Thay the tag break line
 		sOutput = re.sub(r'<img\s[\w=\"\-\s\.]{1,}src="http:\/\/[\w\.\d\/\-]{1,}">', "",sOutput) #Thay the tag img
 		sOutput = re.sub(r'&(aacute|Aacute|Acirc|acirc|acute|aelig|AElig|Agrave|agrave|alpha|Alpha|amp|and|ang|Aring|aring|asymp|Atilde|atilde|Auml|auml|bdquo|beta|Beta|brvbar|bull|cap|Ccedil|ccedil|cedil|cent|circ|clubs|cong|copy|crarr|cup|curren|Chi|chi|Dagger|dagger|darr|deg|delta|Delta|diams|divide|Eacute|eacute|Ecirc|ecirc|Egrave|egrave|empty|emsp|ensp|epsilon|Epsilon|equiv|eta|Eta|eth|ETH|euml|Euml|euro|exist|fnof|forall|frac12|frac14|frac34|gamma|Gamma|ge|gt|harr|hearts|hellip|Iacute|iacute|Icirc|icirc|iexcl|igrave|Igrave|infin|int|iota|Iota|iquest|isin|iuml|Iuml|kappa|Kappa|lambda|Lambda|laquo|larr|lceil|ldquo|le|lfloor|lowast|loz|lrm|lsaquo|lsquo|lt|macr|mdash|micro|minus|Mu|mu|nabla|nbsp|ndash|ne|ni|not|notin|nsub|ntilde|Ntilde|nu|Nu|oacute|Oacute|ocirc|Ocirc|oelig|OElig|ograve|Ograve|oline|Omega|omega|Omicron|omicron|oplus|or|ordf|ordm|oslash|Oslash|otilde|Otilde|otimes|Ouml|ouml|para|part|permil|perp|Pi|pi|piv|plusmn|pound|Prime|prime|prod|prop|Psi|psi|phi|Phi|radic|raquo|rarr|rceil|rdquo|reg|rfloor|rho|Rho|rlm|rsaquo|rsquo|sbquo|scaron|Scaron|sdot|sect|shy|Sigma|sigma|sigmaf|sim|spades|sub|sube|sum|sup|sup1|sup2|sup3|supe|szlig|tau|Tau|tilde|times|there4|Theta|theta|thetasym|thinsp|thorn|THORN|trade|uacute|Uacute|uarr|Ucirc|ucirc|Ugrave|ugrave|uml|upsih|upsilon|Upsilon|Uuml|uuml|Xi|xi|yacute|Yacute|yen|yuml|Yuml|Zeta|zeta|zwj|zwnj|;)+', "", sOutput)
-		return sOutput;
+		return sOutput
