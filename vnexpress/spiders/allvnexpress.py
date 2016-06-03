@@ -23,14 +23,16 @@ class AllvnexpressSpider(scrapy.Spider):
 	)
 
 	rules = (
-		"""Rule(LinkExtractor(deny=('/cong-dong/hoi-dap/')), callback='parse'),
-		Rule(LinkExtractor(deny=('/tin-tuc/cong-dong/')), callback='parse'),
-		Rule(LinkExtractor(deny=('/tin-tuc/tam-su/')), callback='parse'),
-		Rule(LinkExtractor(deny=('/tin-tuc/cuoi/')), callback='parse'),
-		Rule(LinkExtractor(deny=('video.vnexpress.net')), callback='parse'),
-		Rule(LinkExtractor(deny=('ione.vnexpress.net')), callback='parse'),
-		Rule(LinkExtractor(deny=('raovat.vnexpress.net')), callback='parse')"""
-		Rule(LinkExtractor(deny=(r'.*\/cong\-dong\/hoi\-dap\/.*', r'.*\/tin\-tuc\/cong\-dong\/.*', r'.*\/tin\-tuc\/tam\-su\/.*', r'.*\/tin\-tuc\/cuoi\/.*'), deny_domains=(r'.*video\.vnexpress\.net.*', r'.*ione\.vnexpress\.net.*', r'.*raovat\.vnexpress\.net.*')), callback='parse'),
+		Rule(LinkExtractor(deny=[
+			'.*\/cong\-dong\/hoi\-dap\/.*',
+			'.*\/tin\-tuc\/cong\-dong\/.*',
+			'.*\/tin\-tuc\/tam\-su\/.*',
+			'.*\/tin\-tuc\/cuoi\/.*',
+		], deny_domains=[
+			'video.vnexpress.net',
+			'ione.vnexpress.net',
+			'raovat.vnexpress.net',
+		]), callback='parse'),
 	)
 
 	count = 0
@@ -46,7 +48,7 @@ class AllvnexpressSpider(scrapy.Spider):
 		if len(self.crawledLinks) == 0:
 			for cl in collCrawledLinks.find():
 				self.crawledLinks.append(str(cl["crawled"])) #doc lai tu csdl nhung link da crawl
-				self.count = self.count + 1
+			self.count = db.all.find().count()
 
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
