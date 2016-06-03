@@ -10,3 +10,5 @@ mongorestore.exe /v /d allvnexpress /dir:D:\MongoData\dump\allvnexpress /gzip /d
 mongodump.exe /v /d allvnexpress /o D:\MongoData\dumpdata /gzip
 
 db.all.find({}, {_id: 0, link: 1}).forEach(function(doc) { db.crawledLinks.insert({crawled: doc.link}); });
+
+db.all.distinct("subject").forEach(function(subj) { print(subj + " : " + db.all.find({subject: subj}).count()); });

@@ -23,13 +23,14 @@ class AllvnexpressSpider(scrapy.Spider):
 	)
 
 	rules = (
-		Rule(LinkExtractor(deny=('/cong-dong/hoi-dap/')), callback='parse'),
+		"""Rule(LinkExtractor(deny=('/cong-dong/hoi-dap/')), callback='parse'),
 		Rule(LinkExtractor(deny=('/tin-tuc/cong-dong/')), callback='parse'),
 		Rule(LinkExtractor(deny=('/tin-tuc/tam-su/')), callback='parse'),
 		Rule(LinkExtractor(deny=('/tin-tuc/cuoi/')), callback='parse'),
 		Rule(LinkExtractor(deny=('video.vnexpress.net')), callback='parse'),
 		Rule(LinkExtractor(deny=('ione.vnexpress.net')), callback='parse'),
-		Rule(LinkExtractor(deny=('raovat.vnexpress.net')), callback='parse')
+		Rule(LinkExtractor(deny=('raovat.vnexpress.net')), callback='parse')"""
+		Rule(LinkExtractor(deny=(r'.*\/cong\-dong\/hoi\-dap\/.*', r'.*\/tin\-tuc\/cong\-dong\/.*', r'.*\/tin\-tuc\/tam\-su\/.*', r'.*\/tin\-tuc\/cuoi\/.*'), deny_domains=(r'.*video\.vnexpress\.net.*', r'.*ione\.vnexpress\.net.*', r'.*raovat\.vnexpress\.net.*')), callback='parse'),
 	)
 
 	count = 0
