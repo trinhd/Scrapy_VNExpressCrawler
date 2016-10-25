@@ -17,22 +17,25 @@ class AllvnexpressSpider(scrapy.Spider):
 	allowed_domains = ["vnexpress.net"]
 	start_urls = (
 		'http://vnexpress.net/',
+		#'http://giaitri.vnexpress.net/tin-tuc/gioi-sao/quoc-te/nhung-thi-sinh-hoa-hau-tro-thanh-dien-vien-noi-tieng-han-quoc-3488547.html',
+		#'http://thethao.vnexpress.net/tin-tuc/bong-da-trong-nuoc/nguoi-hung-u19-viet-nam-cho-ca-the-gioi-thay-chung-toi-khong-de-bi-bat-nat-3488686.html',
+		#'http://dulich.vnexpress.net/tin-tuc/viet-nam/vietnam-airlines-gianh-2-danh-hieu-tai-giai-oscar-du-lich-3489071.html',
 		#'http://suckhoe.vnexpress.net/tin-tuc/dinh-duong/thuc-don/3-mon-an-giau-canxi-giup-tre-tang-chieu-cao-3350896.html',
 		#'http://suckhoe.vnexpress.net/tin-tuc/suc-khoe/truy-nghi-van-nuoc-giai-khat-nhiem-chi-va-hoi-lo-can-bo-kiem-nghiem-3402482.html',
 		#'http://giaitri.vnexpress.net/tin-tuc/gioi-sao/trong-nuoc/bo-trong-nhan-gia-dinh-khong-muon-con-duoc-tung-ho-qua-som-3403502.html',
 	)
 
 	rules = (
-		Rule(LinkExtractor(deny=[
+		Rule(LinkExtractor(deny=(
 			'.*\/cong\-dong\/hoi\-dap\/.*',
 			'.*\/tin\-tuc\/cong\-dong\/.*',
 			'.*\/tin\-tuc\/tam\-su\/.*',
 			'.*\/tin\-tuc\/cuoi\/.*',
-		], deny_domains=[
-			'video.vnexpress.net',
-			'ione.vnexpress.net',
-			'raovat.vnexpress.net',
-		]), callback='parse'),
+		), deny_domains=(
+			'.*video\.vnexpress\.net.*',
+			'.*ione\.vnexpress\.net.*',
+			'.*raovat\.vnexpress\.net.*',
+		))),
 	)
 
 	count = 0
@@ -62,12 +65,23 @@ class AllvnexpressSpider(scrapy.Spider):
 		contents = response.xpath('//div[contains(@class, "fck_detail")]/p').extract()
 		document = response.xpath('//div[contains(@class, "short_intro")]/text()').extract_first()
 		title = response.xpath('//div[@class="title_news"]/h1/text()').extract_first()
-
+				
 		if title == None:
 			return
 
 		if subject == None:
 			subject = response.xpath('//li[contains(@class, "start")]/h4/a/text()').extract_first()
+
+		if document == None:
+			document = response.xpath('//h3[contains(@class, "short_intro")]/text()').extract_first()
+		if document == None:
+			document = ""
+
+		if len(contents) == 0:
+			div = response.xpath('//div[contains(@class, "fck_detail")]')
+			contents = div.xpath('.//p').extract()
+		if len(contents) == 0:
+			return
 
 		for para in contents:
 			deTag = self.detectTag(para, 0)
