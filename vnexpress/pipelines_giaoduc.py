@@ -11,7 +11,7 @@ import pyorient
 
 #from pymongo import MongoClient
 
-class VnexpressPipeline(object):
+class VNEGiaoDucPipeline(object):
     def __init__(self, client):
         self.client = client
 
@@ -40,7 +40,7 @@ class VnexpressPipeline(object):
         return item
         
     def open_spider(self, spider):
-        session_id = self.client.connect("duytri", "123456")
+        session_id = self.client.connect("root", "123456")
         self.client.db_open("vne_giaoduc", "duytri", "123456")
 
     def close_spider(self, spider):

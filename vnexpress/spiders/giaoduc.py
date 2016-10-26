@@ -10,7 +10,7 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 from vnexpress.items import VnexpressItem
 
-from pymongo import MongoClient
+#from pymongo import MongoClient
 
 
 class GiaoDucSpider(scrapy.Spider):
@@ -49,7 +49,7 @@ class GiaoDucSpider(scrapy.Spider):
 			self.count = db.all.find().count()"""
 
 		client = pyorient.OrientDB("localhost", 2480)
-		session_id = client.connect("duytri", "123456")
+		session_id = client.connect("root", "123456")
 		if client.db_exists("vne_giaoduc"):
 			client.db_open("vne_giaoduc", "duytri", "123456")
 		else:

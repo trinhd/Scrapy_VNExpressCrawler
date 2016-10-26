@@ -64,7 +64,8 @@ CONCURRENT_REQUESTS_PER_DOMAIN=100 #1000000
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'vnexpress.pipelines.VnexpressPipeline': 0,
-#    'vnexpress.pipelines.SomePipeline': 300,
+    #'vnexpress.pipelines_giaoduc.VNEGiaoDucPipeline': 0,
+	#'vnexpress.pipelines.SomePipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
