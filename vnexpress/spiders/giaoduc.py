@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import pymongo
+#import pymongo
+import pyorient
 import re
 
 from scrapy.spiders import CrawlSpider, Rule
@@ -39,19 +40,33 @@ class GiaoDucSpider(scrapy.Spider):
 		links = response.xpath("//a/@href").extract()
 		#links = ()
 
-		client = MongoClient()
+		"""client = MongoClient()
 		db = client.allvnexpress
 		collCrawledLinks = db.crawledLinks
 		if len(self.crawledLinks) == 0:
 			for cl in collCrawledLinks.find():
 				self.crawledLinks.append(str(cl["crawled"])) #doc lai tu csdl nhung link da crawl
-			self.count = db.all.find().count()
+			self.count = db.all.find().count()"""
+
+		client = pyorient.OrientDB("localhost", 2480)
+		session_id = client.connect("duytri", "123456")
+		if client.db_exists("vne_giaoduc"):
+			client.db_open("vne_giaoduc", "duytri", "123456")
+		else:
+			print "Database không tồn tại!"
+			return
+		if len(self.crawledLinks) == 0:
+			allCrawled = client.query("SELECT crawled FROM crawledLinks")
+			for link in allCrawled:
+				self.crawledLinks.append(str(link))
+			self.count = int(client.query("SELECT count(*) FROM crawledLinks"))
 
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
 		for link in links:
 			if linkPattern.match(link) and not link in self.crawledLinks:
-				collCrawledLinks.insert_one({"crawled": link})
+				#collCrawledLinks.insert_one({"crawled": link})
+				client.command( "INSERT INTO crawledLinks (crawled) VALUES ( '%s' )" % (link) )
 				self.crawledLinks.append(link)
 				yield Request(link, self.parse)
 		
