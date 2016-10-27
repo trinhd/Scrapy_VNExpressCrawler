@@ -28,9 +28,7 @@ class GiaoDucSpider(scrapy.Spider):
 	)
 
 	rules = (
-		Rule(LinkExtractor(allow=(
-			'.*\/tin\-tuc\/giao\-duc.*',
-		))),
+	Rule(LinkExtractor(allow=(r'.*\/tin\-tuc\/giao\-duc.*')), callback='parse'),
 	)
 
 	count = 0
