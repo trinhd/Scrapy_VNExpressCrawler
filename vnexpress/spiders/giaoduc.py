@@ -27,9 +27,23 @@ class GiaoDucSpider(scrapy.Spider):
 		#'http://giaitri.vnexpress.net/tin-tuc/gioi-sao/trong-nuoc/bo-trong-nhan-gia-dinh-khong-muon-con-duoc-tung-ho-qua-som-3403502.html',
 	)
 
-	rules = (
+	"""rules = (
 	Rule(LinkExtractor(allow=(r'.*\/tin\-tuc\/giao\-duc.*')), callback='parse'),
-	)
+	)"""
+
+	#danh sách các pattern để lọc link
+	denyLinks = [
+		re.compile(r'.*\/cong\-dong\/hoi\-dap\/.*'),
+		re.compile(r'.*\/tin\-tuc\/cong\-dong\/.*'),
+		re.compile(r'.*\/tin\-tuc\/tam\-su\/.*'),
+		re.compile(r'.*\/tin\-tuc\/cuoi\/.*'),
+		re.compile(r'.*video\.vnexpress\.net.*'),
+		re.compile(r'.*ione\.vnexpress\.net.*'),
+		re.compile(r'.*raovat\.vnexpress\.net.*')
+	]
+	allowLinks = [
+		re.compile(r'.*\/tin\-tuc\/giao\-duc.*')
+	]
 
 	count = 0
 	crawledLinks = []
@@ -153,3 +167,18 @@ class GiaoDucSpider(scrapy.Spider):
 		sOutput = re.sub(r'<img\s[\w=\"\-\s\.]{1,}src="http:\/\/[\w\.\d\/\-]{1,}">', "",sOutput) #Thay the tag img
 		sOutput = re.sub(r'&(aacute|Aacute|Acirc|acirc|acute|aelig|AElig|Agrave|agrave|alpha|Alpha|amp|and|ang|Aring|aring|asymp|Atilde|atilde|Auml|auml|bdquo|beta|Beta|brvbar|bull|cap|Ccedil|ccedil|cedil|cent|circ|clubs|cong|copy|crarr|cup|curren|Chi|chi|Dagger|dagger|darr|deg|delta|Delta|diams|divide|Eacute|eacute|Ecirc|ecirc|Egrave|egrave|empty|emsp|ensp|epsilon|Epsilon|equiv|eta|Eta|eth|ETH|euml|Euml|euro|exist|fnof|forall|frac12|frac14|frac34|gamma|Gamma|ge|gt|harr|hearts|hellip|Iacute|iacute|Icirc|icirc|iexcl|igrave|Igrave|infin|int|iota|Iota|iquest|isin|iuml|Iuml|kappa|Kappa|lambda|Lambda|laquo|larr|lceil|ldquo|le|lfloor|lowast|loz|lrm|lsaquo|lsquo|lt|macr|mdash|micro|minus|Mu|mu|nabla|nbsp|ndash|ne|ni|not|notin|nsub|ntilde|Ntilde|nu|Nu|oacute|Oacute|ocirc|Ocirc|oelig|OElig|ograve|Ograve|oline|Omega|omega|Omicron|omicron|oplus|or|ordf|ordm|oslash|Oslash|otilde|Otilde|otimes|Ouml|ouml|para|part|permil|perp|Pi|pi|piv|plusmn|pound|Prime|prime|prod|prop|Psi|psi|phi|Phi|radic|raquo|rarr|rceil|rdquo|reg|rfloor|rho|Rho|rlm|rsaquo|rsquo|sbquo|scaron|Scaron|sdot|sect|shy|Sigma|sigma|sigmaf|sim|spades|sub|sube|sum|sup|sup1|sup2|sup3|supe|szlig|tau|Tau|tilde|times|there4|Theta|theta|thetasym|thinsp|thorn|THORN|trade|uacute|Uacute|uarr|Ucirc|ucirc|Ugrave|ugrave|uml|upsih|upsilon|Upsilon|Uuml|uuml|Xi|xi|yacute|Yacute|yen|yuml|Yuml|Zeta|zeta|zwj|zwnj|;)+', "", sOutput)
 		return sOutput
+
+	def linkFilter(url):
+		if len(self.allowLinks) != 0:
+			for allow in self.allowLinks:
+				if allow.search(url) != None:
+					for deny in self.denyLinks:
+						if deny.search(url) != None:
+							return false
+					return true
+			return false
+		for deny in self.denyLinks:
+			if deny.search(url) != None:
+				return false
+		
+		return true
