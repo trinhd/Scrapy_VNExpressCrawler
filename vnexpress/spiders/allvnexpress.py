@@ -14,9 +14,10 @@ from pymongo import MongoClient
 
 class AllvnexpressSpider(scrapy.Spider):
 	name = "allvnexpress"
-	allowed_domains = ["vnexpress.net"]
+	allowed_domains = ["vnexpress.net/tin-tuc/giao-duc/"]
 	start_urls = (
-		'http://vnexpress.net/',
+		#'http://vnexpress.net/',
+		'http://vnexpress.net/tin-tuc/giao-duc/',
 		#'http://giaitri.vnexpress.net/tin-tuc/gioi-sao/quoc-te/nhung-thi-sinh-hoa-hau-tro-thanh-dien-vien-noi-tieng-han-quoc-3488547.html',
 		#'http://thethao.vnexpress.net/tin-tuc/bong-da-trong-nuoc/nguoi-hung-u19-viet-nam-cho-ca-the-gioi-thay-chung-toi-khong-de-bi-bat-nat-3488686.html',
 		#'http://dulich.vnexpress.net/tin-tuc/viet-nam/vietnam-airlines-gianh-2-danh-hieu-tai-giai-oscar-du-lich-3489071.html',
@@ -48,7 +49,9 @@ class AllvnexpressSpider(scrapy.Spider):
 		re.compile(r'.*ione\.vnexpress\.net.*'),
 		re.compile(r'.*raovat\.vnexpress\.net.*')
 	]
-	allowLinks = []
+	allowLinks = [
+		re.compile(r'.*\/tin\-tuc\/giao\-duc.*'),
+	]
 
 	count = 0
 	crawledLinks = []
@@ -68,7 +71,7 @@ class AllvnexpressSpider(scrapy.Spider):
 		linkPattern = re.compile("^(?:ftp|http|https):\/\/(?:[\w\.\-\+]+:{0,1}[\w\.\-\+]*@)?(?:[a-z0-9\-\.]+)(?::[0-9]+)?(?:\/|\/(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+)|\?(?:[\w#!:\.\?\+=&amp;%@!\-\/\(\)]+))?$")
 
 		for link in links:
-			if linkPattern.match(link) and not link in self.crawledLinks and linkFilter(link):
+			if linkPattern.match(link) and self.linkFilter(link) and not link in self.crawledLinks:
 				collCrawledLinks.insert_one({"crawled": link})
 				self.crawledLinks.append(link)
 				yield Request(link, self.parse)
@@ -92,8 +95,8 @@ class AllvnexpressSpider(scrapy.Spider):
 		if len(contents) == 0:
 			div = response.xpath('//div[contains(@class, "fck_detail")]')
 			contents = div.xpath('.//p').extract()
-		if len(contents) == 0:
-			return
+			if len(contents) == 0:
+				return
 
 		for para in contents:
 			deTag = self.detectTag(para, 0)
@@ -159,17 +162,23 @@ class AllvnexpressSpider(scrapy.Spider):
 		sOutput = re.sub(r'&(aacute|Aacute|Acirc|acirc|acute|aelig|AElig|Agrave|agrave|alpha|Alpha|amp|and|ang|Aring|aring|asymp|Atilde|atilde|Auml|auml|bdquo|beta|Beta|brvbar|bull|cap|Ccedil|ccedil|cedil|cent|circ|clubs|cong|copy|crarr|cup|curren|Chi|chi|Dagger|dagger|darr|deg|delta|Delta|diams|divide|Eacute|eacute|Ecirc|ecirc|Egrave|egrave|empty|emsp|ensp|epsilon|Epsilon|equiv|eta|Eta|eth|ETH|euml|Euml|euro|exist|fnof|forall|frac12|frac14|frac34|gamma|Gamma|ge|gt|harr|hearts|hellip|Iacute|iacute|Icirc|icirc|iexcl|igrave|Igrave|infin|int|iota|Iota|iquest|isin|iuml|Iuml|kappa|Kappa|lambda|Lambda|laquo|larr|lceil|ldquo|le|lfloor|lowast|loz|lrm|lsaquo|lsquo|lt|macr|mdash|micro|minus|Mu|mu|nabla|nbsp|ndash|ne|ni|not|notin|nsub|ntilde|Ntilde|nu|Nu|oacute|Oacute|ocirc|Ocirc|oelig|OElig|ograve|Ograve|oline|Omega|omega|Omicron|omicron|oplus|or|ordf|ordm|oslash|Oslash|otilde|Otilde|otimes|Ouml|ouml|para|part|permil|perp|Pi|pi|piv|plusmn|pound|Prime|prime|prod|prop|Psi|psi|phi|Phi|radic|raquo|rarr|rceil|rdquo|reg|rfloor|rho|Rho|rlm|rsaquo|rsquo|sbquo|scaron|Scaron|sdot|sect|shy|Sigma|sigma|sigmaf|sim|spades|sub|sube|sum|sup|sup1|sup2|sup3|supe|szlig|tau|Tau|tilde|times|there4|Theta|theta|thetasym|thinsp|thorn|THORN|trade|uacute|Uacute|uarr|Ucirc|ucirc|Ugrave|ugrave|uml|upsih|upsilon|Upsilon|Uuml|uuml|Xi|xi|yacute|Yacute|yen|yuml|Yuml|Zeta|zeta|zwj|zwnj|;)+', "", sOutput)
 		return sOutput
 
-	def linkFilter(url):
+	def linkFilter(self, url):
+		print url+'\n'
 		if len(self.allowLinks) != 0:
 			for allow in self.allowLinks:
 				if allow.search(url) != None:
 					for deny in self.denyLinks:
 						if deny.search(url) != None:
-							return false
-					return true
-			return false
+							print 'Khong chap nhan link\n'
+							return False
+					print 'Chap nhan link\n'
+					return True
+			print 'Khong chap nhan link\n'
+			return False
 		for deny in self.denyLinks:
 			if deny.search(url) != None:
-				return false
+				print 'Khong chap nhan link\n'
+				return False
 		
-		return true
+		print 'Chap nhan link\n'
+		return True
